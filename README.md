@@ -1,4 +1,4 @@
-# Sistema de Gestión y Control de Acceso de Empleados (SGCAE) - Seguimiento 2
+# Sistema de Gestión de Empleados - Seguimiento 2
 
 Proyecto desarrollado para el **Seguimiento 2** aplicando **Clean Architecture (CA)**, principios de **Domain-Driven Design (DDD)**, arquitectura **CQRS (Command Query Responsibility Segregation)** y persistencia en **SQL Server** mediante **Entity Framework Core (EF Core 10)**.
 

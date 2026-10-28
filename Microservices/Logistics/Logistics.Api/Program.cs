@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "SGCAE API - Control de Acceso de Empleados (Seguimiento 2)",
+        Title = "API de Gestión de Empleados (Seguimiento 2)",
         Version = "v1",
         Description = "API desarrollada bajo Clean Architecture, DDD, CQRS y EF Core para gestionar empleados, credenciales, puntos de acceso y el registro de entradas y salidas de una empresa logística."
     });
@@ -41,7 +41,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGCAE API v1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Gestión de Empleados API v1");
         c.RoutePrefix = "swagger";
     });
 
