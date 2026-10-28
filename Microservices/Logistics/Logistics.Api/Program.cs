@@ -1,9 +1,11 @@
 ﻿using Logistics.Api.Configuration;
+using Logistics.Api.Middleware;
 using Logistics.Application;
 using Logistics.Persistence;
 using Logistics.Persistence.Seeds;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
+using System.Reflection;
 
 DotEnvLoader.Load();
 
@@ -19,12 +21,20 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "API desarrollada bajo Clean Architecture, DDD, CQRS y EF Core para gestionar empleados, credenciales, puntos de acceso y el registro de entradas y salidas de una empresa logística."
     });
+
+    // Documentación XML de los controladores en Swagger y Scalar
+    string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
 });
 
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(builder.Configuration);
 
 WebApplication app = builder.Build();
+
+// Manejo global de excepciones de negocio y errores no controlados
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -57,6 +67,9 @@ catch (Exception ex)
     app.Logger.LogWarning(ex, "No se pudo ejecutar el seeder en el arranque.");
 }
 
+// Comprobación de estado del servicio
+app.MapGet("/health", () => Results.Ok(new { status = "Healthy", timestamp = DateTime.UtcNow }));
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -64,3 +77,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
