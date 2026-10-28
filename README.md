@@ -161,27 +161,35 @@ Una vez iniciada la API en `http://localhost:5100`:
 
 ## 🧪 Pruebas Automatizadas
 
-La solución cuenta con **45 pruebas unitarias** que cubren el Dominio, la Capa de Aplicación, la Persistencia y los Controladores:
+La solución cuenta con **71 pruebas unitarias** que cubren el Dominio, la Capa de Aplicación, la Persistencia y los Controladores:
 
 | Suite | Cobertura | Pruebas |
 |---|---|---|
 | `DomainTests` | Entidades, Value Object `Email`, reglas e invariantes | 20 |
-| `ApplicationTests` | Mediador, casos de uso y registro de accesos | 10 |
+| `ApplicationTests` | Mediador, casos de uso, credenciales e historial | 19 |
 | `PersistenceTests` | DataContext, repositorios y filtros (EF InMemory) | 6 |
-| `ControllerTests` | Controladores y códigos de estado HTTP | 9 |
+| `ControllerTests` | Controladores y códigos de estado HTTP | 26 |
 
 Para ejecutar todas las pruebas:
 ```bash
 dotnet test Microservices\Logistics\Logistics.slnx
 ```
-**Resultado**: `Correctas! - Con error: 0, Superado: 45, Omitido: 0, Total: 45`
+**Resultado**: `Correctas! - Con error: 0, Superado: 71, Omitido: 0, Total: 71`
+
+---
+
+## 🛡️ Robustez de la API
+
+- **Middleware global de excepciones**: cualquier `BussinesRuleException` no atrapada por un controlador responde `400 Bad Request` con su mensaje de negocio, y los errores no controlados responden `500` con un mensaje genérico sin exponer detalles internos (todo queda registrado en el log).
+- **`GET /health`**: comprobación de estado del servicio (`{"status": "Healthy", "timestamp": ...}`).
+- **Documentación XML**: los comentarios de los controladores se muestran como descripciones de cada endpoint en Swagger y Scalar.
 
 ---
 
 ## 🌿 Flujo de Ramas Git (Git Flow)
 
 El desarrollo del proyecto se gestionó mediante fases y ramas locales:
-- `main`: Rama principal de entrega final etiquetada con `v2.0.0-entrega`.
+- `main`: Rama principal de entrega final etiquetada con `v2.0.0-entrega` y `v2.1.0`.
 - `develop`: Rama base de integración continua.
 - `feature/fase-1-setup`: Inicialización de proyectos y estructura espejo de Inmoby.
 - `feature/fase-2-dominio`: Entidades DDD, Value Object `Email`, enums, reglas de negocio y pruebas.
@@ -189,3 +197,5 @@ El desarrollo del proyecto se gestionó mediante fases y ramas locales:
 - `feature/fase-4-persistencia`: `DataContext`, Fluent API, repositorios, migraciones y seeders.
 - `feature/fase-5-api`: Controladores REST, OpenAPI, Swagger UI y Scalar API Reference.
 - `feature/fase-6-cierre`: README completo y release de la entrega.
+- `feature/mejoras-1-pruebas`: Ampliación de la suite de pruebas (45 → 71) en aplicación y controladores.
+- `feature/mejoras-2-api`: Middleware global de excepciones, documentación XML en Swagger y endpoint `/health`.
