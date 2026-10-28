@@ -1,6 +1,148 @@
 ﻿@Logistics.Api_HostAddress = http://localhost:5100
 
-GET {{Logistics.Api_HostAddress}}/weatherforecast/
+### RF-01: Consultar empleados (con filtro de búsqueda)
+GET {{Logistics.Api_HostAddress}}/api/employees?pageNumber=1&pageSize=10&searchTerm=daniel
 Accept: application/json
+
+###
+
+### RF-01: Consultar detalle de un empleado con sus credenciales
+GET {{Logistics.Api_HostAddress}}/api/employees/{employeeId}
+Accept: application/json
+
+###
+
+### RF-01: Registrar un empleado
+POST {{Logistics.Api_HostAddress}}/api/employees
+Content-Type: application/json
+
+{
+  "identificationNumber": "3344556677",
+  "names": "Sofía",
+  "lastNames": "Torres",
+  "email": "sofia.torres@logistics.com",
+  "position": "Analista de Inventarios",
+  "area": 2
+}
+
+###
+
+### RF-01: Actualizar un empleado
+PUT {{Logistics.Api_HostAddress}}/api/employees/{employeeId}
+Content-Type: application/json
+
+{
+  "names": "Sofía",
+  "lastNames": "Torres Pinzón",
+  "email": "sofia.torres@logistics.com",
+  "position": "Analista Senior de Inventarios",
+  "area": 4
+}
+
+###
+
+### RF-01: Desactivar un empleado
+DELETE {{Logistics.Api_HostAddress}}/api/employees/{employeeId}
+Accept: application/json
+
+###
+
+### RF-02: Consultar una credencial por su código
+GET {{Logistics.Api_HostAddress}}/api/credentials/by-code/CRD-0001
+Accept: application/json
+
+###
+
+### RF-02: Consultar credenciales de un empleado
+GET {{Logistics.Api_HostAddress}}/api/credentials/by-employee/{employeeId}
+Accept: application/json
+
+###
+
+### RF-02: Asignar una credencial a un empleado
+POST {{Logistics.Api_HostAddress}}/api/credentials
+Content-Type: application/json
+
+{
+  "code": "CRD-0007",
+  "employeeId": "00000000-0000-0000-0000-000000000000"
+}
+
+###
+
+### RF-02: Bloquear una credencial
+PATCH {{Logistics.Api_HostAddress}}/api/credentials/{credentialId}/block
+Accept: application/json
+
+###
+
+### RF-02: Revocar una credencial
+PATCH {{Logistics.Api_HostAddress}}/api/credentials/{credentialId}/revoke
+Accept: application/json
+
+###
+
+### RF-03: Registrar una entrada (autorizada)
+POST {{Logistics.Api_HostAddress}}/api/access/register
+Content-Type: application/json
+
+{
+  "credentialCode": "CRD-0001",
+  "accessPointId": "00000000-0000-0000-0000-000000000000",
+  "movementType": 1
+}
+
+###
+
+### RF-03: Registrar un acceso con credencial bloqueada (rechazado)
+POST {{Logistics.Api_HostAddress}}/api/access/register
+Content-Type: application/json
+
+{
+  "credentialCode": "CRD-0005",
+  "accessPointId": "00000000-0000-0000-0000-000000000000",
+  "movementType": 1
+}
+
+###
+
+### RF-04: Consultar historial de accesos (filtro por resultado rechazado)
+GET {{Logistics.Api_HostAddress}}/api/access/history?pageNumber=1&pageSize=10&result=2
+Accept: application/json
+
+###
+
+### RF-04: Consultar historial de accesos de un empleado en un rango de fechas
+GET {{Logistics.Api_HostAddress}}/api/access/history?employeeId={employeeId}&dateFrom=2026-01-01T00:00:00Z&dateTo=2026-12-31T23:59:59Z
+Accept: application/json
+
+###
+
+### RF-06: Consultar puntos de acceso habilitados
+GET {{Logistics.Api_HostAddress}}/api/accesspoints?isEnabled=true
+Accept: application/json
+
+###
+
+### RF-06: Registrar un punto de acceso
+POST {{Logistics.Api_HostAddress}}/api/accesspoints
+Content-Type: application/json
+
+{
+  "name": "Bodega 2",
+  "type": 3,
+  "description": "Acceso a la bodega sur de mercancías.",
+  "isEnabled": true
+}
+
+###
+
+### RF-06: Deshabilitar un punto de acceso
+PATCH {{Logistics.Api_HostAddress}}/api/accesspoints/{accessPointId}/status
+Content-Type: application/json
+
+{
+  "enable": false
+}
 
 ###
