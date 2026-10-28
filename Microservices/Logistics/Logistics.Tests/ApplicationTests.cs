@@ -1,6 +1,12 @@
 ﻿using Logistics.Application.Contracts.Persistence;
 using Logistics.Application.Contracts.Repositories;
 using Logistics.Application.UseCases.AccessRecords.Commands.RegisterAccess;
+using Logistics.Application.UseCases.AccessRecords.Queries.GetAccessHistory;
+using Logistics.Application.UseCases.Credentials.Commands.AssignCredential;
+using Logistics.Application.UseCases.Credentials.Commands.BlockCredential;
+using Logistics.Application.UseCases.Credentials.Commands.RevokeCredential;
+using Logistics.Application.UseCases.Credentials.Queries.GetCredentialByCode;
+using Logistics.Application.UseCases.Credentials.Queries.GetCredentialsByEmployee;
 using Logistics.Application.UseCases.Employees.Commands.CreateEmployee;
 using Logistics.Application.UseCases.Employees.Queries.GetEmployeeById;
 using Logistics.Application.UseCases.Employees.Queries.GetEmployeesList;
@@ -396,5 +402,130 @@ public sealed class ApplicationTests
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.TotalCount);
+    }
+
+    [TestMethod]
+    public async Task GetCredentialsByEmployeeUseCase_ShouldReturnCredentials()
+    {
+        var (_, credentials, _, _, _, employee, credential, _) = CreateAccessTestData();
+        var useCase = new GetCredentialsByEmployeeUseCase(credentials);
+
+        var result = await useCase.Handle(new GetCredentialsByEmployeeQuery(employee.Id));
+
+        Assert.AreEqual(1, result.TotalCount);
+        Assert.AreEqual(credential.Code, result.Items[0].Code);
+        Assert.AreEqual("Daniel Zapata", result.Items[0].EmployeeName);
+    }
+
+    [TestMethod]
+    public async Task GetCredentialByCodeUseCase_WithExistingCode_ShouldReturnCredential()
+    {
+        var (_, credentials, _, _, _, employee, credential, _) = CreateAccessTestData();
+        var useCase = new GetCredentialByCodeUseCase(credentials);
+
+        var result = await useCase.Handle(new GetCredentialByCodeQuery("crd-0001"));
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(credential.Id, result.Id);
+        Assert.AreEqual(CredentialStatus.Active, result.Status);
+        Assert.AreEqual(employee.Id, result.EmployeeId);
+    }
+
+    [TestMethod]
+    public async Task GetCredentialByCodeUseCase_WithUnknownCode_ShouldReturnNull()
+    {
+        var (_, credentials, _, _, _, _, _, _) = CreateAccessTestData();
+        var useCase = new GetCredentialByCodeUseCase(credentials);
+
+        var result = await useCase.Handle(new GetCredentialByCodeQuery("CRD-9999"));
+
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public async Task AssignCredentialUseCase_WithDuplicatedCode_ShouldThrowException()
+    {
+        var (employees, credentials, _, _, unitOfWork, employee, _, _) = CreateAccessTestData();
+        var useCase = new AssignCredentialUseCase(credentials, employees, unitOfWork);
+
+        var command = new AssignCredentialCommand { Code = "crd-0001", EmployeeId = employee.Id };
+
+        await Assert.ThrowsExactlyAsync<BussinesRuleException>(() => useCase.Handle(command));
+    }
+
+    [TestMethod]
+    public async Task AssignCredentialUseCase_WithUnknownEmployee_ShouldThrowException()
+    {
+        var (employees, credentials, _, _, unitOfWork, _, _, _) = CreateAccessTestData();
+        var useCase = new AssignCredentialUseCase(credentials, employees, unitOfWork);
+
+        var command = new AssignCredentialCommand { Code = "CRD-0007", EmployeeId = Guid.NewGuid() };
+
+        await Assert.ThrowsExactlyAsync<BussinesRuleException>(() => useCase.Handle(command));
+    }
+
+    [TestMethod]
+    public async Task AssignCredentialUseCase_WithValidData_ShouldReturnNewCredentialId()
+    {
+        var (employees, credentials, _, _, unitOfWork, employee, _, _) = CreateAccessTestData();
+        var useCase = new AssignCredentialUseCase(credentials, employees, unitOfWork);
+
+        var command = new AssignCredentialCommand { Code = "CRD-0007", EmployeeId = employee.Id };
+
+        var result = await useCase.Handle(command);
+
+        Assert.AreNotEqual(Guid.Empty, result);
+        Assert.AreEqual(1, unitOfWork.CommitCount);
+    }
+
+    [TestMethod]
+    public async Task BlockCredentialUseCase_WhenCredentialNotFound_ShouldReturnFalse()
+    {
+        var (_, credentials, _, _, unitOfWork, _, _, _) = CreateAccessTestData();
+        var useCase = new BlockCredentialUseCase(credentials, unitOfWork);
+
+        var result = await useCase.Handle(new BlockCredentialCommand(Guid.NewGuid()));
+
+        Assert.IsFalse(result);
+        Assert.AreEqual(0, unitOfWork.CommitCount);
+    }
+
+    [TestMethod]
+    public async Task RevokeCredentialUseCase_WhenCredentialIsBlocked_ShouldRevokeAndReturnTrue()
+    {
+        var (_, credentials, _, _, unitOfWork, employee, credential, _) = CreateAccessTestData();
+        credential.Block();
+        var useCase = new RevokeCredentialUseCase(credentials, unitOfWork);
+
+        var result = await useCase.Handle(new RevokeCredentialCommand(credential.Id));
+
+        Assert.IsTrue(result);
+        Assert.AreEqual(CredentialStatus.Revoked, credential.Status);
+        Assert.AreEqual(1, unitOfWork.CommitCount);
+    }
+
+    [TestMethod]
+    public async Task GetAccessHistoryUseCase_ShouldReturnMappedDTOs()
+    {
+        var (_, credentials, _, records, _, employee, credential, accessPoint) = CreateAccessTestData();
+
+        AccessRecord record = AccessRecord.CreateDenied(credential.Id, accessPoint.Id, MovementType.Entry, DenialReason.CredentialBlocked);
+
+        // Set navigation properties using reflection for testing
+        typeof(AccessRecord).GetProperty("Credential")?.SetValue(record, credential);
+        typeof(AccessRecord).GetProperty("AccessPoint")?.SetValue(record, accessPoint);
+
+        await records.CreateAsync(record);
+
+        var useCase = new GetAccessHistoryUseCase(records);
+
+        var result = await useCase.Handle(new GetAccessHistoryQuery());
+
+        Assert.AreEqual(1, result.TotalCount);
+        Assert.AreEqual(credential.Code, result.Items[0].CredentialCode);
+        Assert.AreEqual("Daniel Zapata", result.Items[0].EmployeeName);
+        Assert.AreEqual(accessPoint.Name, result.Items[0].AccessPointName);
+        Assert.AreEqual(employee.Id, result.Items[0].EmployeeId);
+        Assert.AreEqual(DenialReason.CredentialBlocked, result.Items[0].DeniedReason);
     }
 }
