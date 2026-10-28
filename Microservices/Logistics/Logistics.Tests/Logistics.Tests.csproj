@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
+    <PackageReference Include="MSTest" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logistics.Domain\Logistics.Domain.csproj" />
+    <ProjectReference Include="..\Logistics.Application\Logistics.Application.csproj" />
+    <ProjectReference Include="..\Logistics.Persistence\Logistics.Persistence.csproj" />
+    <ProjectReference Include="..\Logistics.Api\Logistics.Api.csproj" />
+  </ItemGroup>
+
+</Project>
