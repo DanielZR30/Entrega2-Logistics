@@ -1,41 +1,24 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Logistics.Api.Configuration;
+using Logistics.Application;
+using Logistics.Persistence;
+using Logistics.Persistence.Seeds;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+DotEnvLoader.Load();
 
-var app = builder.Build();
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+builder.Services.AddApplicationServices();
+builder.Services.AddPersistenceServices(builder.Configuration);
+
+WebApplication app = builder.Build();
+
+try
 {
-    app.MapOpenApi();
+    await DataBaseSeeder.SeedAsync(app.Services);
 }
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
+catch (Exception ex)
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balny", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    app.Logger.LogWarning(ex, "No se pudo ejecutar el seeder en el arranque.");
+}
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

@@ -1,4 +1,5 @@
-﻿using Logistics.Domain.Entities.Employees;
+﻿using Logistics.Domain.Entities.AccessRecords;
+using Logistics.Domain.Entities.Employees;
 using Logistics.Domain.Exceptions;
 
 namespace Logistics.Domain.Entities.Credentials
@@ -12,6 +13,7 @@ namespace Logistics.Domain.Entities.Credentials
         public Employee Employee { get; private set; } = null!;
         public DateTime AssignedAt { get; private set; }
         public DateTime? StatusChangedAt { get; private set; }
+        public ICollection<AccessRecord> AccessRecords { get; private set; } = new List<AccessRecord>();
 
         private Credential() { }
 
