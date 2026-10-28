@@ -60,7 +60,7 @@ Entrega2-Logistics/
         │   ├── Properties/launchSettings.json
         │   ├── appsettings.json            # Cadena de conexión a SQL Server
         │   ├── Logistics.Api.http          # Archivo de pruebas HTTP listo para ejecutar
-        │   └── Program.cs                  # Pipeline HTTP, OpenAPI, Swagger y Scalar
+        │   └── Program.cs                  # Pipeline HTTP, OpenAPI, Swagger y manejo de errores
         │
         └── Logistics.Tests/                # [/Tests/] Pruebas Unitarias
             ├── DomainTests.cs              # Reglas de negocio e invariantes
@@ -145,17 +145,17 @@ Al arrancar, el sistema ejecutará automáticamente el semillero (`DataBaseSeede
 
 ---
 
-## 🎨 Interfaces Visuales de Documentación
+## 🎨 Interfaz de Documentación
 
 Una vez iniciada la API en `http://localhost:5100`:
 
-1. **Scalar API Reference (Moderna y Elegante)**:
-   - **URL**: [http://localhost:5100/](http://localhost:5100/) (o `/scalar/v1`)
-   - Incluye tema *DeepSpace*, generador de snippets en cURL/C#/JS/Python, modo oscuro y consola interactiva de pruebas.
-
-2. **Swagger UI (Clásica)**:
-   - **URL**: [http://localhost:5100/swagger](http://localhost:5100/swagger)
+1. **Swagger UI**:
+   - **URL**: [http://localhost:5100/swagger](http://localhost:5100/swagger) (la raíz `/` redirige aquí)
    - Especificación OpenAPI JSON: [http://localhost:5100/swagger/v1/swagger.json](http://localhost:5100/swagger/v1/swagger.json)
+   - Documentación interactiva con las descripciones de cada endpoint (comentarios XML de los controladores).
+
+2. **Estado del servicio**:
+   - **URL**: [http://localhost:5100/health](http://localhost:5100/health)
 
 ---
 
@@ -182,7 +182,7 @@ dotnet test Microservices\Logistics\Logistics.slnx
 
 - **Middleware global de excepciones**: cualquier `BussinesRuleException` no atrapada por un controlador responde `400 Bad Request` con su mensaje de negocio, y los errores no controlados responden `500` con un mensaje genérico sin exponer detalles internos (todo queda registrado en el log).
 - **`GET /health`**: comprobación de estado del servicio (`{"status": "Healthy", "timestamp": ...}`).
-- **Documentación XML**: los comentarios de los controladores se muestran como descripciones de cada endpoint en Swagger y Scalar.
+- **Documentación XML**: los comentarios de los controladores se muestran como descripciones de cada endpoint en Swagger UI.
 
 ---
 
@@ -195,7 +195,7 @@ El desarrollo del proyecto se gestionó mediante fases y ramas locales:
 - `feature/fase-2-dominio`: Entidades DDD, Value Object `Email`, enums, reglas de negocio y pruebas.
 - `feature/fase-3-aplicacion`: `SimpleMediator`, `Pagination`, DTOs, Queries y Commands CQRS.
 - `feature/fase-4-persistencia`: `DataContext`, Fluent API, repositorios, migraciones y seeders.
-- `feature/fase-5-api`: Controladores REST, OpenAPI, Swagger UI y Scalar API Reference.
+- `feature/fase-5-api`: Controladores REST, OpenAPI y Swagger UI.
 - `feature/fase-6-cierre`: README completo y release de la entrega.
 - `feature/mejoras-1-pruebas`: Ampliación de la suite de pruebas (45 → 71) en aplicación y controladores.
 - `feature/mejoras-2-api`: Middleware global de excepciones, documentación XML en Swagger y endpoint `/health`.

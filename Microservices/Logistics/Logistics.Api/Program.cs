@@ -4,7 +4,6 @@ using Logistics.Application;
 using Logistics.Persistence;
 using Logistics.Persistence.Seeds;
 using Microsoft.OpenApi;
-using Scalar.AspNetCore;
 using System.Reflection;
 
 DotEnvLoader.Load();
@@ -38,7 +37,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-    // Swagger UI clásico
+    // Swagger UI: documentación interactiva de la API
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -46,16 +45,8 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = "swagger";
     });
 
-    // Interfaz moderna y estilizada: Scalar API Reference
-    app.MapScalarApiReference(options =>
-    {
-        options.WithTitle("Control de Acceso SGCAE - Seguimiento 2")
-               .WithTheme(ScalarTheme.DeepSpace)
-               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
-    });
-
-    // Redireccionar raíz al dashboard moderno
-    app.MapGet("/", () => Results.Redirect("/scalar/v1"));
+    // Redireccionar raíz a la documentación interactiva
+    app.MapGet("/", () => Results.Redirect("/swagger"));
 }
 
 try
