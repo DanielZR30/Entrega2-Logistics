@@ -1,4 +1,4 @@
-using Logistics.Domain.Entities.Employees;
+﻿using Logistics.Domain.Entities.Employees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

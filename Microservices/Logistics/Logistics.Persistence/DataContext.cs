@@ -1,4 +1,4 @@
-using Logistics.Domain.Entities.AccessPoints;
+﻿using Logistics.Domain.Entities.AccessPoints;
 using Logistics.Domain.Entities.AccessRecords;
 using Logistics.Domain.Entities.Credentials;
 using Logistics.Domain.Entities.Employees;

@@ -1,4 +1,4 @@
-using Logistics.Application.Utilities.Pagination;
+﻿using Logistics.Application.Utilities.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logistics.Persistence.Extensions

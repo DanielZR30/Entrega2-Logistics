@@ -1,4 +1,4 @@
-using Logistics.Domain.Entities.AccessPoints;
+﻿using Logistics.Domain.Entities.AccessPoints;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,4 +1,4 @@
-using Logistics.Application.Contracts.Repositories;
+﻿using Logistics.Application.Contracts.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logistics.Persistence.Repositories

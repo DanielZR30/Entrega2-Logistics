@@ -1,4 +1,4 @@
-using Logistics.Application.Contracts.Persistence;
+﻿using Logistics.Application.Contracts.Persistence;
 
 namespace Logistics.Persistence.UnitOfWorks
 {

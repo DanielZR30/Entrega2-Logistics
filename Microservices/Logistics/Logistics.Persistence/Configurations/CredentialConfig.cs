@@ -1,4 +1,4 @@
-using Logistics.Domain.Entities.Credentials;
+﻿using Logistics.Domain.Entities.Credentials;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
